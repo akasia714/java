@@ -61,6 +61,14 @@ const check_input = () => {
         return false;
     }
 
+    if (emailValue.length === 0 || passwordValue.length === 0){
+        alert("아이디와 비밀번호를 모두 입력해주세요.");
+    }
+    else{
+        session_set();
+        loginForm.submit();
+    }
+
     const hasSpecialChar = passwordValue.match(/[!,@#$%^&*()_+/-[\]{};':"\\|,.<>\/?]+/) !== null;
 
     if (!hasSpecialChar){
@@ -105,6 +113,95 @@ function init(){
     if (get_id){
         emailInput.value = get_id;
         idsave_check.checked = true;
+    }
+    session_check();
+}
+
+function session_set(){
+    let session_id = document.querySelector("#typeEmailX");
+    let session_password = document.querySelector("#typePasswordX");
+    if (sessionStorage){
+        let en_text = encrypt_text(session_password.value);
+        sessionStorage.setItem("Session_Storage_id", session_id.value);
+        sessionStorage.setItem("Session_Storage_pass", en_text);
+    }
+    else{
+        alert("로컬 스토리지 지원하지 않음");
+    }
+}
+
+function session_get(){
+    if(sessionStorage){
+        return sessionStorage.getItem("Session_Storage_test");
+    }
+    else{
+        alert("세션 스토리지 지원하지 않음");
+    }
+}
+
+function session_check(){
+    if (sessionStorage.getItem("Session_Storage_test")){
+        alert("이미 로그인 상태입니다.");
+        location.href='../login/index_login.html';
+    }
+}
+
+function session_del(){
+    if(sessionStorage){
+        sessionStorage.removeItem("Session_Storage_test");
+        alert("세션 스토리지 삭제");
+    }
+    else{
+        alert("세션 스토리지 지원하지 않음");
+    }
+}
+
+function logout(){
+    session_del();
+    location.href='../Index.html';
+}
+
+function encodeByAES256(key, data){
+    const cipher = CryptoJS.AES.encrypt(data, CryptoJS.enc.Utf8.parse(key),{
+        iv: CryptoJS.enc.Uft8.parse(""),
+        padding: CryptoJS.pad.Pkcs7,
+        mode: CryptoJS.mode.CBC
+    });
+    return cipher.toString();
+}
+
+function decodeByAES256(key, data){
+    const cipher = CryptoJS.AES.encrypt(data, CryptoJS.enc.Utf8.parse(key),{
+        iv: CryptoJS.enc.Uft8.parse(""),
+        padding: CryptoJS.pad.Pkcs7,
+        mode: CryptoJS.mode.CBC
+    });
+    return cipher.toString(CryptoJS.enc.Utf8);
+}
+
+function encrypt_text(password){
+    const k = "key";
+    const rk = k.padEnd(32, " ");
+    const b = password;
+    const eb = this.encodeByAES256(rk, b);
+    return eb;
+    console.log(eb);
+}
+
+function decrypt_text(){
+    const k = "key";
+    const rk = k.padEnd(32, " "); const b = password;
+    const eb = session_get();
+    const b = this.decodeByAES256(rk,eb);
+    console.log(b);
+}
+
+function init_logined(){
+    if(sessionStorage){
+        decrypt_text();
+    }
+    else{
+        alert("세션 스토리지 미지원");
     }
 }
 
