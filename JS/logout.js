@@ -147,7 +147,8 @@ function session_check(){
 
 function session_del(){
     if(sessionStorage){
-        sessionStorage.removeItem("Session_Storage_test");
+        sessionStorage.removeItem("Session_Storage_id");
+        sessionStorage.removeItem("Session_Storage_pass");
         alert("세션 스토리지 삭제");
     }
     else{
@@ -204,4 +205,4 @@ function init_logined(){
     }
 }
 
-document.getElementById("login_btn").addEventListener('click', check_input);
+document.getElementById("logout_btn").addEventListener('click', session_del);
